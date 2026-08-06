@@ -1,0 +1,44 @@
+name: Daily Holiday Data Auto Updater
+
+on:
+  schedule:
+    # 매일 한국 시간 오전 9시 (UTC 00:00)에 자동으로 실행
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # 깃허브 웹 UI에서 언제든 수동으로 즉시 가동할 수 있는 단추 제공
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: Node.js 환경 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 공휴일 데이터 페치 및 정적 파일 최신화
+        env:
+          KASI_API_KEY: ${{ secrets.KASI_API_KEY }}
+        run: |
+          # Node.js 스크립트를 직접 실행 (의존성 설치가 필요 없어 극도로 빠름)
+          node scripts/fetch-holidays.js
+
+      - name: 변경 사항 감지 및 자동 커밋/푸시
+        run: |
+          # data/holidays.json에 변경이 있는지 검사
+          if git diff --quiet data/holidays.json; then
+            echo "변경 사항이 없습니다. 워크플로우를 종료합니다."
+          else
+            echo "새로운 공휴일 정보(또는 임시공휴일)가 감지되었습니다! 자동 커밋을 진행합니다."
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git add data/holidays.json
+            git commit -m "chore: 공휴일 데이터 자동 업데이트 [skip ci]"
+            git push
+          fi

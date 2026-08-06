@@ -1,0 +1,18 @@
+{
+  "name": "dayoff-calculator",
+  "version": "1.0.0",
+  "description": "한국 연차 최적화 계산기 (Toss Style)",
+  "type": "module",
+  "scripts": {
+    "fetch-holidays": "node --env-file=.env scripts/fetch-holidays.js"
+  },
+  "keywords": [
+    "korean",
+    "holidays",
+    "annual-leave",
+    "calculator",
+    "toss-style"
+  ],
+  "author": "",
+  "license": "MIT"
+}
