@@ -1,4 +1,4 @@
-import fs from 'fs';
+himport fs from 'fs';
 import path from 'path';
 
 // Node.js v20.6+ natively supports --env-file=.env, which populates process.env.
